@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kyle Lieber
+ * Copyright (c) 2014 Kyle Lieber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -20,24 +20,15 @@
  */
 package com.github.klieber.phantomjs.mojo;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import com.github.klieber.phantomjs.archive.PhantomJSArchiveBuilder;
-import de.schlichtherle.truezip.file.TFile;
+import com.github.klieber.phantomjs.resolver.SystemPathPhantomJsResolver;
+import com.github.klieber.phantomjs.resolver.WebPhantomJsResolver;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.cli.Commandline;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Maven plugin for downloading and installing phantomjs binaries.
@@ -115,99 +106,15 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
     String phantomJsBinary = null;
 
     if (this.checkSystemPath) {
-      phantomJsBinary = this.findBinaryOnSystemPath();
+      phantomJsBinary = new SystemPathPhantomJsResolver(getLog(), version, enforceVersion).resolve();
     }
 
     if (phantomJsBinary == null) {
-      phantomJsBinary = installBinaryFromWeb();
+      phantomJsBinary = new WebPhantomJsResolver(getLog(), outputDirectory, baseUrl, version).resolve();
     }
 
     if (phantomJsBinary != null) {
       this.setPhantomJsBinary(phantomJsBinary);
     }
-  }
-
-  private String findBinaryOnSystemPath() throws MojoExecutionException {
-    String systemPath = System.getenv("PATH");
-    String pathSeparator = System.getProperty("path.separator",":");
-    String fileSeparator = System.getProperty("file.separator","/");
-    String binary = null;
-    for (String path : systemPath.split(pathSeparator)) {
-      String absolutePath = path + fileSeparator + PHANTOMJS;
-      if (FileUtils.fileExists(absolutePath)) {
-        binary = absolutePath;
-        String versionString = getVersion(binary);
-        if (!enforceVersion || this.version.equals(versionString)) {
-          getLog().info("Found phantomjs "+versionString+" at "+binary);
-          return binary;
-        }
-      }
-    }
-    return null;
-  }
-
-  private String getVersion(String binary) throws MojoExecutionException {
-    Commandline commandline = new Commandline(binary);
-    commandline.createArg().setValue("-v");
-    try {
-      Process process = new ProcessBuilder(commandline.getShellCommandline()).start();
-      BufferedReader standardOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
-      String versionString = StringUtils.trim(standardOut.readLine());
-      int exitCode = process.waitFor();
-      if (exitCode != 0) {
-        throw new MojoExecutionException("Failed to check system path");
-      }
-      return versionString;
-    } catch (IOException e) {
-      throw new MojoExecutionException("Failed to check system path",e);
-    } catch (InterruptedException e) {
-      throw new MojoExecutionException("Failed to check system path", e);
-    }
-  }
-
-  private String installBinaryFromWeb() throws MojoExecutionException {
-
-    if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
-      throw new MojoExecutionException("Unable to create directory: " + outputDirectory);
-    }
-
-    PhantomJSArchive phantomJSFile = new PhantomJSArchiveBuilder(version).build();
-
-    File extractTo = new File(outputDirectory, phantomJSFile.getExtractToPath());
-
-    if (!extractTo.exists()) {
-
-      if (baseUrl == null) {
-        baseUrl = LEGACY_VERSION.compareTo(new ComparableVersion(version)) >= 0 ? GOOGLE_CODE : BITBUCKET;
-      }
-
-      StringBuilder url = new StringBuilder();
-      url.append(baseUrl);
-      url.append(phantomJSFile.getArchiveName());
-
-      try {
-        URL downloadLocation = new URL(url.toString());
-
-        getLog().info("Downloading phantomjs binaries from " + url);
-        File outputFile = new File(outputDirectory, phantomJSFile.getArchiveName());
-        FileUtils.copyURLToFile(downloadLocation, outputFile);
-
-        if (outputFile.length() <= 0) {
-          throw new MojoExecutionException("Unable to download phantomjs binary from " + url);
-        }
-        TFile archive = new TFile(outputDirectory, phantomJSFile.getPathToExecutable());
-
-        getLog().info("Extracting " + archive.getAbsolutePath() + " to " + extractTo.getAbsolutePath());
-        if (extractTo.getParentFile().mkdirs()) {
-          archive.cp(extractTo);
-          extractTo.setExecutable(true);
-        }
-      } catch (MalformedURLException e) {
-        throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
-      } catch (IOException e) {
-        throw new MojoExecutionException("Unable to download phantomjs binary from " + url, e);
-      }
-    }
-    return extractTo.getAbsolutePath();
   }
 }
