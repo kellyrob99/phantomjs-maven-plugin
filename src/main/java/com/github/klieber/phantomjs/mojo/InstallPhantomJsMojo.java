@@ -20,10 +20,12 @@
  */
 package com.github.klieber.phantomjs.mojo;
 
-import com.github.klieber.phantomjs.resolver.SystemPathPhantomJsResolver;
+import com.github.klieber.phantomjs.resolver.PhantomJsPathLocator;
+import com.github.klieber.phantomjs.resolver.SystemEnvironment;
 import com.github.klieber.phantomjs.resolver.WebPhantomJsResolver;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -102,11 +104,22 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
   )
   private boolean enforceVersion;
 
+  private PhantomJsPathLocator locator;
+
+  public InstallPhantomJsMojo(PhantomJsPathLocator locator) {
+    this.locator = locator;
+    this.locator.setLog(getLog());
+  }
+
+  public InstallPhantomJsMojo() {
+    this(new PhantomJsPathLocator(new SystemEnvironment()));
+  }
+
   public void run() throws MojoExecutionException {
     String phantomJsBinary = null;
 
     if (this.checkSystemPath) {
-      phantomJsBinary = new SystemPathPhantomJsResolver(getLog(), version, enforceVersion).resolve();
+      phantomJsBinary = locator.find(version, enforceVersion);
     }
 
     if (phantomJsBinary == null) {

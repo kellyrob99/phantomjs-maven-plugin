@@ -33,40 +33,31 @@ import java.io.InputStreamReader;
 /**
  * Resolve location of PhantomJS on the system path.
  */
-public class SystemPathPhantomJsResolver implements PhantomJsResolver {
+public class PhantomJsPathLocator {
 
   private static final String PHANTOMJS = "phantomjs";
 
   private static final String MSG_FOUND_PHANTOMJS = "Found phantomjs %s at %s";
 
-  private final Log log;
-  private final String version;
-  private final boolean enforceVersion;
+  private final Environment environment;
+  private Log log;
 
-  public SystemPathPhantomJsResolver(Log log, String version) {
-    this(log,version,true);
+  public PhantomJsPathLocator(Environment environment) {
+    this.environment = environment;
   }
 
-  public SystemPathPhantomJsResolver(Log log, String version, boolean enforceVersion) {
+  public void setLog(Log log) {
     this.log = log;
-    this.version = version;
-    this.enforceVersion = enforceVersion;
   }
 
-  @Override
-  public String resolve() throws MojoExecutionException {
-    String systemPath = System.getenv("PATH");
-    String pathSeparator = System.getProperty("path.separator",":");
-    String fileSeparator = System.getProperty("file.separator","/");
-    String binary = null;
-    for (String path : systemPath.split(pathSeparator)) {
-      String absolutePath = path + fileSeparator + PHANTOMJS;
+  public String find(String version, boolean enforceVersion) throws MojoExecutionException {
+    for (String path : environment.getSystemPath()) {
+      String absolutePath = path + environment.getPathSeperator() + PHANTOMJS;
       if (FileUtils.fileExists(absolutePath)) {
-        binary = absolutePath;
+        String binary = absolutePath;
         String versionString = getVersion(binary);
-        if (!enforceVersion || this.version.equals(versionString)) {
-          log.info(String.format(MSG_FOUND_PHANTOMJS,versionString,binary))
-          ;
+        if (!enforceVersion || version.equals(versionString)) {
+          log.info(String.format(MSG_FOUND_PHANTOMJS,versionString,binary));
           return binary;
         }
       }
