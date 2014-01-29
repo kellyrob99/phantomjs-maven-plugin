@@ -26,6 +26,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +44,11 @@ import java.util.Scanner;
  */
 @Mojo(name = "exec", defaultPhase = LifecyclePhase.TEST)
 public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExecPhantomJsMojo.class);
+
+  private static final String PHANTOMJS_COMMAND = "phantomjs command: {}";
+  private static final String EXECUTION_FAILURE = "Failed to execute phantomjs command";
 
   /**
    * Command line options for phantomjs
@@ -98,17 +105,17 @@ public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
     commandline.addArguments(this.arguments.toArray(new String[this.arguments.size()]));
 
     try {
-      if (getLog().isDebugEnabled()) {
-        getLog().debug("phantomjs command: " + Arrays.asList(commandline.getShellCommandline()));
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug(PHANTOMJS_COMMAND, Arrays.asList(commandline.getShellCommandline()));
       }
       Process process = new ProcessBuilder(commandline.getShellCommandline()).start();
       inheritIO(process.getInputStream(), System.out);
       inheritIO(process.getErrorStream(), System.err);
       process.waitFor();
     } catch (IOException e) {
-      throw new MojoExecutionException("Failed to execute phantomjs command", e);
+      throw new MojoExecutionException(EXECUTION_FAILURE, e);
     } catch (InterruptedException e) {
-      throw new MojoExecutionException("Failed to execute phantomjs command", e);
+      throw new MojoExecutionException(EXECUTION_FAILURE, e);
     }
   }
 
@@ -116,7 +123,7 @@ public class ExecPhantomJsMojo extends AbstractPhantomJsMojo {
     try {
       return CommandLineUtils.translateCommandline(this.commandLineOptions);
     } catch (Exception e) {
-      throw new MojoExecutionException("Failed to execute phantomjs command", e);
+      throw new MojoExecutionException(EXECUTION_FAILURE, e);
     }
   }
 

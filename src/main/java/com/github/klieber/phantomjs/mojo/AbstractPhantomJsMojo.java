@@ -25,6 +25,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.StringUtils;
+import org.slf4j.impl.StaticLoggerBinder;
 
 /**
  * Abstract base class for phantomjs-maven-plugin mojos.
@@ -69,6 +70,7 @@ public abstract class AbstractPhantomJsMojo extends AbstractMojo {
   private MavenProject mavenProject;
 
   public final void execute() throws MojoExecutionException {
+    StaticLoggerBinder.getSingleton().setMavenLog(getLog());
     if (!skip) {
       this.run();
     }
