@@ -20,7 +20,9 @@
  */
 package com.github.klieber.phantomjs.download;
 
-public class DownloadException extends RuntimeException {
+import com.github.klieber.phantomjs.PhantomJsException;
+
+public class DownloadException extends PhantomJsException {
 
   public DownloadException(String message) {
     super(message);

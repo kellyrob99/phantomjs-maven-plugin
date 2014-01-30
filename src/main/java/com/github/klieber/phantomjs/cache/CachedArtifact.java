@@ -18,10 +18,37 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs.extract;
+package com.github.klieber.phantomjs.cache;
+
+import com.github.klieber.phantomjs.archive.PhantomJSArchive;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.repository.RepositorySystem;
 
 import java.io.File;
 
-public interface Extractor {
-  void extract(File archive) throws ExtractionException;
+public class CachedArtifact implements CachedFile {
+
+  private final PhantomJSArchive phantomJSArchive;
+  private final RepositorySystem repositorySystem;
+  private final ArtifactRepository repository;
+
+  public CachedArtifact(PhantomJSArchive phantomJSArchive,
+                        RepositorySystem repositorySystem,
+                        ArtifactRepository repository) {
+    this.phantomJSArchive = phantomJSArchive;
+    this.repositorySystem = repositorySystem;
+    this.repository = repository;
+  }
+
+  @Override
+  public File getFile() {
+    Artifact artifact = repositorySystem.createArtifactWithClassifier(
+        "org.phantomjs",
+        "phantomjs",
+        phantomJSArchive.getVersion(),
+        phantomJSArchive.getExtension(),
+        phantomJSArchive.getClassifier());
+    return new File(repository.getBasedir(), repository.pathOf(artifact));
+  }
 }

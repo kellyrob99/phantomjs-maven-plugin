@@ -21,5 +21,5 @@
 package com.github.klieber.phantomjs.install;
 
 public interface Installer {
-  String install();
+  String install() throws InstallationException;
 }

@@ -26,7 +26,7 @@ import com.github.klieber.phantomjs.util.Predicate;
 import java.io.File;
 import java.util.Map;
 
-public class RuleBasedDownloader implements Downloader {
+public class RuleBasedDownloader<E> implements Downloader {
 
   private final static String NO_RULES_MATCH = "No matching Downloader found.";
   private final Map<Predicate<String>, Downloader> rules;

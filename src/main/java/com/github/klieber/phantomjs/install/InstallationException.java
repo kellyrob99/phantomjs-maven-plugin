@@ -18,10 +18,13 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs.extract;
+package com.github.klieber.phantomjs.install;
 
-import java.io.File;
+import com.github.klieber.phantomjs.PhantomJsException;
 
-public interface Extractor {
-  void extract(File archive) throws ExtractionException;
+public class InstallationException extends PhantomJsException {
+
+  public InstallationException(String message) {
+    super(message);
+  }
 }

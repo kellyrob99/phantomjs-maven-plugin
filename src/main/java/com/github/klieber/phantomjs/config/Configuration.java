@@ -20,6 +20,7 @@
  */
 package com.github.klieber.phantomjs.config;
 
+import com.github.klieber.phantomjs.archive.PhantomJSArchive;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
@@ -28,4 +29,5 @@ public interface Configuration {
   String getVersion();
   boolean enforceVersion();
   File getOutputDirectory();
+  PhantomJSArchive getPhantomJsArchive();
 }

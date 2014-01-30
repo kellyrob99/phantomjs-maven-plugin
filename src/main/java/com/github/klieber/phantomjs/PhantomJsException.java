@@ -18,23 +18,15 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs.extract;
+package com.github.klieber.phantomjs;
 
-import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import org.apache.maven.artifact.Artifact;
+public class PhantomJsException extends RuntimeException {
 
-public class ArchiveExtractor implements Extractor {
-
-  private final Artifact artifact;
-  private final PhantomJSArchive archive;
-
-  public ArchiveExtractor(Artifact artifact, PhantomJSArchive archive) {
-    this.artifact = artifact;
-    this.archive = archive;
+  public PhantomJsException(String message) {
+    super(message);
   }
 
-  @Override
-  public void extract(PhantomJSArchive archive) {
-
+  public PhantomJsException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

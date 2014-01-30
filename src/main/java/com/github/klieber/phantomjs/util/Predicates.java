@@ -18,10 +18,20 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs.extract;
+package com.github.klieber.phantomjs.util;
 
-import java.io.File;
+public class Predicates {
 
-public interface Extractor {
-  void extract(File archive) throws ExtractionException;
+  private Predicates() {
+    // hide default constructor
+  }
+
+  public static <E> Predicate<E> not(final Predicate<E> predicate) {
+    return new Predicate<E>() {
+      @Override
+      public boolean apply(E element) {
+        return !predicate.apply(element);
+      }
+    };
+  }
 }

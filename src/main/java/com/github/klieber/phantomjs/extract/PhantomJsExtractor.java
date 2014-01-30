@@ -18,60 +18,44 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs.install;
+package com.github.klieber.phantomjs.extract;
 
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import com.github.klieber.phantomjs.archive.PhantomJSArchiveBuilder;
-import com.github.klieber.phantomjs.cache.CachedFile;
-import com.github.klieber.phantomjs.config.Configuration;
-import com.github.klieber.phantomjs.download.Downloader;
-import com.github.klieber.phantomjs.extract.Extractor;
-import com.github.klieber.phantomjs.extract.PhantomJsExtractor;
+import de.schlichtherle.truezip.file.TFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 
-public class WebInstaller implements Installer {
+public class PhantomJsExtractor implements Extractor {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(WebInstaller.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PhantomJsExtractor.class);
 
   private static final String UNABLE_TO_EXTRACT = "Unable to extract phantomjs binary from %s";
   private static final String UNABLE_TO_CREATE_DIRECTORY = "Unable to create directory: %s";
   private static final String EXTRACTING = "Extracting {} to {}s";
 
-  private final CachedFile cachedFile;
-  private final Downloader downloader;
-
+  private final File extractTo;
   private final PhantomJSArchive phantomJSArchive;
-  private final File outputDirectory;
 
-  public WebInstaller(Configuration config, CachedFile cachedFile, Downloader downloader) {
-    this.phantomJSArchive = config.getPhantomJsArchive();
-    this.outputDirectory = config.getOutputDirectory();
-    this.cachedFile = cachedFile;
-    this.downloader = downloader;
+  public PhantomJsExtractor(File extractTo, PhantomJSArchive phantomJSArchive) {
+    this.extractTo = extractTo;
+    this.phantomJSArchive = phantomJSArchive;
   }
 
   @Override
-  public String install() throws InstallationException {
+  public void extract(File archive) {
+    try {
+      TFile tfile = new TFile(archive, phantomJSArchive.getPathToExecutable());
 
-    if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
-      throw new InstallationException(String.format(UNABLE_TO_CREATE_DIRECTORY,outputDirectory));
-    }
-
-    File extractTo = new File(outputDirectory, phantomJSArchive.getExtractToPath());
-
-    if (!extractTo.exists()) {
-      File archive = cachedFile.getFile();
-
-      if (!archive.exists()) {
-        downloader.download(phantomJSArchive, archive);
+      LOGGER.info(EXTRACTING, tfile.getAbsolutePath(), extractTo.getAbsolutePath());
+      if (extractTo.getParentFile().mkdirs()) {
+        tfile.cp(extractTo);
+        extractTo.setExecutable(true);
       }
-
-      Extractor extractor = new PhantomJsExtractor(extractTo,phantomJSArchive);
-      extractor.extract(archive);
+    } catch (IOException e) {
+      throw new ExtractionException(String.format(UNABLE_TO_EXTRACT, archive), e);
     }
-    return extractTo.getAbsolutePath();
   }
 }

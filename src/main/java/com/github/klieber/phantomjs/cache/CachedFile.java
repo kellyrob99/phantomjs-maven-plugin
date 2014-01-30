@@ -18,8 +18,10 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.github.klieber.phantomjs.store;
+package com.github.klieber.phantomjs.cache;
 
-public interface FileStore {
+import java.io.File;
 
+public interface CachedFile {
+  File getFile();
 }

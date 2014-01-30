@@ -20,8 +20,11 @@
  */
 package com.github.klieber.phantomjs.extract;
 
-import java.io.File;
+import com.github.klieber.phantomjs.PhantomJsException;
 
-public interface Extractor {
-  void extract(File archive) throws ExtractionException;
+public class ExtractionException extends PhantomJsException {
+
+  public ExtractionException(String message, Throwable cause) {
+    super(message,cause);
+  }
 }
