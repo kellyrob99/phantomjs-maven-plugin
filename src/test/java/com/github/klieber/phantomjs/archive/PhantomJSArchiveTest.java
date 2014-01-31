@@ -69,7 +69,7 @@ public class PhantomJSArchiveTest {
 
   @Test
   public void testGetClassifier() {
-     archive = createPhantomJSArchive();
+    archive = createPhantomJSArchive();
     assertEquals(PLATFORM,archive.getClassifier());
     archive = createPhantomJSArchive(ARCH);
     assertEquals(PLATFORM+"-"+ARCH,archive.getClassifier());

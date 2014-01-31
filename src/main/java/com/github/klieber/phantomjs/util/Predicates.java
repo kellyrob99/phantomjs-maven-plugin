@@ -34,4 +34,21 @@ public class Predicates {
       }
     };
   }
+
+  public static <E> Predicate<E> always(final boolean flag) {
+    return new Predicate<E>() {
+      @Override
+      public boolean apply(E element) {
+        return flag;
+      }
+    };
+  }
+
+  public static <E> Predicate<E> alwaysTrue() {
+    return always(true);
+  }
+
+  public static <E> Predicate<E> alwaysFalse() {
+    return always(false);
+  }
 }

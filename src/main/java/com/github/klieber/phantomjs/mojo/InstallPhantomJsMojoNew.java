@@ -54,7 +54,7 @@ import java.util.*;
  *
  * @since 0.1
  */
-@Mojo(name = "installnew", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES)
+@Mojo(name = "install", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES)
 public class InstallPhantomJsMojoNew extends AbstractPhantomJsMojo implements Configuration {
 
   private static final String PHANTOMJS = "phantomjs";
@@ -192,9 +192,9 @@ public class InstallPhantomJsMojoNew extends AbstractPhantomJsMojo implements Co
   private Downloader getDownloader() {
     Downloader downloader = null;
     if (this.baseUrl == null) {
-      Map<Predicate<String>,Downloader> rules = new HashMap<Predicate<String>,Downloader>();
-      rules.put(IS_LEGACY_VERSION,new WebDownloader(GOOGLE_CODE));
-      rules.put(Predicates.not(IS_LEGACY_VERSION),new WebDownloader(BITBUCKET));
+      Map<Downloader, Predicate<String>> rules = new HashMap<Downloader, Predicate<String>>();
+      rules.put(new WebDownloader(GOOGLE_CODE),IS_LEGACY_VERSION);
+      rules.put(new WebDownloader(BITBUCKET),Predicates.not(IS_LEGACY_VERSION));
       downloader = new RuleBasedDownloader(rules);
     } else {
       downloader = new WebDownloader(baseUrl);

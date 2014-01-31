@@ -29,6 +29,9 @@ import java.io.File;
 
 public class CachedArtifact implements CachedFile {
 
+  public static final String GROUP_ID = "org.phantomjs";
+  public static final String ARTIFACT_ID = "phantomjs";
+
   private final PhantomJSArchive phantomJSArchive;
   private final RepositorySystem repositorySystem;
   private final ArtifactRepository repository;
@@ -44,8 +47,8 @@ public class CachedArtifact implements CachedFile {
   @Override
   public File getFile() {
     Artifact artifact = repositorySystem.createArtifactWithClassifier(
-        "org.phantomjs",
-        "phantomjs",
+        GROUP_ID,
+        ARTIFACT_ID,
         phantomJSArchive.getVersion(),
         phantomJSArchive.getExtension(),
         phantomJSArchive.getClassifier());

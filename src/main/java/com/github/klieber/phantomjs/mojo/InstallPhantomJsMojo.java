@@ -48,7 +48,7 @@ import java.net.URL;
  *
  * @since 0.1
  */
-@Mojo(name = "install", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES)
+@Mojo(name = "installold", defaultPhase = LifecyclePhase.PROCESS_TEST_SOURCES)
 public class InstallPhantomJsMojo extends AbstractPhantomJsMojo {
 
   private static final String PHANTOMJS = "phantomjs";

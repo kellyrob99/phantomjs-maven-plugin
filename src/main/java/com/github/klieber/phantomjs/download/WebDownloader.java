@@ -50,7 +50,6 @@ public class WebDownloader implements Downloader {
   @Override
   public void download(PhantomJSArchive archive, File target) {
     String url = buildDownloadUrl(archive);
-
     try {
       URL downloadLocation = new URL(url);
 

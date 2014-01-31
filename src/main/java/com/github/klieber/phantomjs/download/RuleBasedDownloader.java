@@ -26,23 +26,33 @@ import com.github.klieber.phantomjs.util.Predicate;
 import java.io.File;
 import java.util.Map;
 
-public class RuleBasedDownloader<E> implements Downloader {
+public class RuleBasedDownloader implements Downloader {
 
   private final static String NO_RULES_MATCH = "No matching Downloader found.";
-  private final Map<Predicate<String>, Downloader> rules;
+  private final Map<Downloader, Predicate<String>> rules;
 
-  public RuleBasedDownloader(Map<Predicate<String>,Downloader> rules) {
+  public RuleBasedDownloader(Map<Downloader,Predicate<String>> rules) {
     this.rules = rules;
   }
 
   @Override
   public void download(PhantomJSArchive archive, File target) throws DownloadException {
-    for(Map.Entry<Predicate<String>,Downloader> entry : this.rules.entrySet()) {
-      if (entry.getKey().apply(archive.getVersion())) {
-        entry.getValue().download(archive,target);
-        return;
+    DownloadException exception = null;
+
+    for(Map.Entry<Downloader, Predicate<String>> entry : this.rules.entrySet()) {
+      try {
+        if (entry.getValue().apply(archive.getVersion())) {
+          entry.getKey().download(archive,target);
+          return;
+        }
+      } catch(DownloadException e) {
+        // save the exception so we can throw it later if no other downloader is available
+        exception = e;
       }
     }
-    throw new DownloadException(NO_RULES_MATCH);
+    if (exception == null) {
+      exception = new DownloadException(NO_RULES_MATCH);
+    }
+    throw exception;
   }
 }
