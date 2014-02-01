@@ -32,7 +32,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -42,7 +41,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PhantomJsBinaryResolverTest {
 
-  private static final String PROJECT_ROOT = Paths.get("").toAbsolutePath().toString();
+  private static final String PROJECT_ROOT = System.getProperty("user.dir");
 
   private static File phantomJsHome;
 
