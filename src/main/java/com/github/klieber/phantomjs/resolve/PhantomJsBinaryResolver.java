@@ -66,8 +66,8 @@ public class PhantomJsBinaryResolver implements BinaryResolver {
   private String getBinaryPath(String path, String binary) {
     File file = new File(path, binary);
     if (file.exists()) {
-      String versionString = getVersion(binary);
-      if (!this.config.enforceVersion() || this.config.getVersion().equals(versionString)) {
+      String versionString = getVersion(file.getAbsolutePath());
+      if (versionString != null && (!this.config.enforceVersion() || this.config.getVersion().equals(versionString))) {
         LOGGER.info(FOUND_PHANTOMJS,versionString,binary);
         return file.getAbsolutePath();
       }
