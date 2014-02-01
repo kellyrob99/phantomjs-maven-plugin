@@ -20,19 +20,32 @@
  */
 package com.github.klieber.phantomjs.util;
 
-public class Predicates {
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-  private Predicates() {
-    // hide default constructor
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class PredicatesTest {
+
+  private static final String STRING = "a-string";
+
+  @Mock
+  private Predicate<String> predicate;
+
+  @Test
+  public void shouldNegateTheTruePredicate() {
+    when(predicate.apply(STRING)).thenReturn(true);
+    assertFalse(Predicates.not(predicate).apply(STRING));
   }
 
-  public static <E> Predicate<E> not(final Predicate<E> predicate) {
-    return new Predicate<E>() {
-      @Override
-      public boolean apply(E element) {
-        return !predicate.apply(element);
-      }
-    };
+  @Test
+  public void shouldNegateTheFalsePredicate() {
+    when(predicate.apply(STRING)).thenReturn(false);
+    assertTrue(Predicates.not(predicate).apply(STRING));
   }
-
 }
