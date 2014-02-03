@@ -23,5 +23,5 @@ package com.github.klieber.phantomjs.extract;
 import java.io.File;
 
 public interface Extractor {
-  void extract(File archive) throws ExtractionException;
+  void extract(File archive, File extractTo) throws ExtractionException;
 }

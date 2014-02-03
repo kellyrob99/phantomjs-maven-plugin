@@ -68,7 +68,7 @@ public class PhantomJsBinaryResolverTest {
 
   @AfterClass
   public static void afterClass() {
-    if (phantomJsHome != null) {
+    if (phantomJsHome != null && phantomJsHome.exists()) {
       phantomJsHome.delete();
     }
   }

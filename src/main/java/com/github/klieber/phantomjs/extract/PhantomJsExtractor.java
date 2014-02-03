@@ -36,16 +36,14 @@ public class PhantomJsExtractor implements Extractor {
   private static final String UNABLE_TO_CREATE_DIRECTORY = "Unable to create directory: %s";
   private static final String EXTRACTING = "Extracting {} to {}s";
 
-  private final File extractTo;
   private final PhantomJSArchive phantomJSArchive;
 
-  public PhantomJsExtractor(File extractTo, PhantomJSArchive phantomJSArchive) {
-    this.extractTo = extractTo;
+  public PhantomJsExtractor(PhantomJSArchive phantomJSArchive) {
     this.phantomJSArchive = phantomJSArchive;
   }
 
   @Override
-  public void extract(File archive) {
+  public void extract(File archive,File extractTo) {
     try {
       TFile tfile = new TFile(archive, phantomJSArchive.getPathToExecutable());
 

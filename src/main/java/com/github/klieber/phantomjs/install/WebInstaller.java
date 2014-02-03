@@ -20,8 +20,8 @@
  */
 package com.github.klieber.phantomjs.install;
 
+import com.github.klieber.phantomjs.PhantomJsException;
 import com.github.klieber.phantomjs.archive.PhantomJSArchive;
-import com.github.klieber.phantomjs.archive.PhantomJSArchiveBuilder;
 import com.github.klieber.phantomjs.cache.CachedFile;
 import com.github.klieber.phantomjs.config.Configuration;
 import com.github.klieber.phantomjs.download.Downloader;
@@ -34,31 +34,22 @@ import java.io.File;
 
 public class WebInstaller implements Installer {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(WebInstaller.class);
-
-  private static final String UNABLE_TO_EXTRACT = "Unable to extract phantomjs binary from %s";
-  private static final String UNABLE_TO_CREATE_DIRECTORY = "Unable to create directory: %s";
-  private static final String EXTRACTING = "Extracting {} to {}s";
-
+  private final Configuration config;
   private final CachedFile cachedFile;
   private final Downloader downloader;
+  private final Extractor extractor;
 
-  private final PhantomJSArchive phantomJSArchive;
-  private final File outputDirectory;
-
-  public WebInstaller(Configuration config, CachedFile cachedFile, Downloader downloader) {
-    this.phantomJSArchive = config.getPhantomJsArchive();
-    this.outputDirectory = config.getOutputDirectory();
+  public WebInstaller(Configuration config, CachedFile cachedFile, Downloader downloader, Extractor extractor) {
+    this.config = config;
     this.cachedFile = cachedFile;
     this.downloader = downloader;
+    this.extractor = extractor;
   }
 
   @Override
-  public String install() throws InstallationException {
-
-    if (!outputDirectory.exists() && !outputDirectory.mkdirs()) {
-      throw new InstallationException(String.format(UNABLE_TO_CREATE_DIRECTORY,outputDirectory));
-    }
+  public String install() {
+    PhantomJSArchive phantomJSArchive = config.getPhantomJsArchive();
+    File outputDirectory = config.getOutputDirectory();
 
     File extractTo = new File(outputDirectory, phantomJSArchive.getExtractToPath());
 
@@ -68,9 +59,7 @@ public class WebInstaller implements Installer {
       if (!archive.exists()) {
         downloader.download(phantomJSArchive, archive);
       }
-
-      Extractor extractor = new PhantomJsExtractor(extractTo,phantomJSArchive);
-      extractor.extract(archive);
+      extractor.extract(archive, extractTo);
     }
     return extractTo.getAbsolutePath();
   }

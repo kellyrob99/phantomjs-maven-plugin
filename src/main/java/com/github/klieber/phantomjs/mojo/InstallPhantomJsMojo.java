@@ -28,6 +28,8 @@ import com.github.klieber.phantomjs.config.Configuration;
 import com.github.klieber.phantomjs.download.Downloader;
 import com.github.klieber.phantomjs.download.RuleBasedDownloader;
 import com.github.klieber.phantomjs.download.WebDownloader;
+import com.github.klieber.phantomjs.extract.Extractor;
+import com.github.klieber.phantomjs.extract.PhantomJsExtractor;
 import com.github.klieber.phantomjs.install.Installer;
 import com.github.klieber.phantomjs.install.WebInstaller;
 import com.github.klieber.phantomjs.locate.ArchiveLocator;
@@ -185,7 +187,11 @@ public class InstallPhantomJsMojo extends AbstractPhantomJsMojo implements Confi
   private Locator getArchiveLocator() {
     CachedFile cachedFile = new CachedArtifact(getPhantomJsArchive(), repositorySystem, localRepository);
     Downloader downloader = getDownloader();
-    Installer installer = new WebInstaller(this,cachedFile,downloader);
+
+    Extractor extractor = new PhantomJsExtractor(phantomJSArchive);
+
+    Installer installer = new WebInstaller(this,cachedFile,downloader, extractor);
+
     return new ArchiveLocator(installer);
   }
 
