@@ -33,7 +33,6 @@ public class PhantomJsExtractor implements Extractor {
   private static final Logger LOGGER = LoggerFactory.getLogger(PhantomJsExtractor.class);
 
   private static final String UNABLE_TO_EXTRACT = "Unable to extract phantomjs binary from %s";
-  private static final String UNABLE_TO_CREATE_DIRECTORY = "Unable to create directory: %s";
   private static final String EXTRACTING = "Extracting {} to {}s";
 
   private final PhantomJSArchive phantomJSArchive;
