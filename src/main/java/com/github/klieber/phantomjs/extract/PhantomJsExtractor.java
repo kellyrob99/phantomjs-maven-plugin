@@ -33,7 +33,7 @@ public class PhantomJsExtractor implements Extractor {
   private static final Logger LOGGER = LoggerFactory.getLogger(PhantomJsExtractor.class);
 
   private static final String UNABLE_TO_EXTRACT = "Unable to extract phantomjs binary from %s";
-  private static final String EXTRACTING = "Extracting {} to {}s";
+  private static final String EXTRACTING = "Extracting {} to {}";
 
   private final PhantomJSArchive phantomJSArchive;
 
@@ -45,9 +45,8 @@ public class PhantomJsExtractor implements Extractor {
   public void extract(File archive,File extractTo) {
     try {
       TFile tfile = new TFile(archive, phantomJSArchive.getPathToExecutable());
-
       LOGGER.info(EXTRACTING, tfile.getAbsolutePath(), extractTo.getAbsolutePath());
-      if (extractTo.getParentFile().mkdirs()) {
+      if (extractTo.getParentFile().exists() || extractTo.getParentFile().mkdirs()) {
         tfile.cp(extractTo);
         extractTo.setExecutable(true);
       }

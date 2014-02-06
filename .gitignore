@@ -18,3 +18,4 @@ local.properties
 *.iws
 .idea/
 jacoco.exec
+*.orig
