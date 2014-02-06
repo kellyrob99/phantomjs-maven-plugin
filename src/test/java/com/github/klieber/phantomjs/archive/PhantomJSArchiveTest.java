@@ -68,6 +68,12 @@ public class PhantomJSArchiveTest {
   }
 
   @Test
+  public void testGetVersion() {
+    archive = createPhantomJSArchive();
+    assertEquals(VERSION,archive.getVersion());
+  }
+
+  @Test
   public void testGetClassifier() {
     archive = createPhantomJSArchive();
     assertEquals(PLATFORM,archive.getClassifier());
